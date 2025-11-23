@@ -1,0 +1,47 @@
+---
+title: "PlotContributions"
+output: html_document
+---
+
+```{r}
+Data = read.table('PoliticalContributions/indiv24/employerMoney.txt', sep=';', as.is=TRUE)
+colnames(Data) = c('Company', 'Rep', 'Dem', 'Other', 'Total')
+head(Data)
+```
+```{r}
+print(Data[,1])
+```
+```{r}
+s = 160:190 # select specific rows to plot
+D = Data[s,] # take the subset
+D = D[order(D$Rep+D$Dem),] # re-order the data according to the total
+rep = D$Rep/10^5 # scale the values
+dem = D$Dem/10^5
+
+mx = max(rep+dem)
+names = D[,1]
+n = length(rep)
+# Fix the plot window for long names
+par(mar = c(5, 10, 4, 2) + 0.1)
+
+plot(x=c(0,mx), y=c(1,n), yaxt='n', 
+     xlab="Dollars - 100,000's", cex.axis=.65, 
+     typ='n', ylab="", cex.lab = .8,
+     main='Political Contributions by Employer')
+
+axis(side=2, at=seq(1, n), labels=names, las=2, cex.axis=.65)
+
+for (i in 1:n) {
+  lines(y=c(i,i), x=c(0, rep[i]), col="red", lwd=3)
+  lines(y=c(i,i), x=c(rep[i], rep[i]+dem[i]), col='blue', lwd=3)
+}
+
+legend('bottomright',
+        legend=c('Republican', 'Democrat'),
+        fill=c('red','blue'),
+        bty='n')
+
+par(mar=c(5, 4, 4, 2) + 0.1)
+
+```
+

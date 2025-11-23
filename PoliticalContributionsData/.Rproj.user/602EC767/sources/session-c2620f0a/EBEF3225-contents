@@ -1,0 +1,57 @@
+---
+title: "PlotContributions"
+output: html_document
+---
+
+```{r setup-data}
+# 1. Load the raw data
+Data = read.table('PoliticalContributions/indiv24/employerMoney.txt', sep=';', as.is=TRUE)
+colnames(Data) = c('Company', 'Rep', 'Dem', 'Other', 'Total')
+head(Data)
+
+# 2. Load the libraries needed for plotting
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# 3. Select the subset of data to plot
+s = 160:190 # select specific rows to plot
+D = Data[s,] # take the subset
+
+# 4. Prepare the data for ggplot
+# Create a 'Total' column just for sorting purposes
+D$Total <- D$Rep + D$Dem
+
+# Reshape from 'wide' (Rep, Dem columns) to 'long' (Party, Amount columns)
+plot_data <- D %>%
+  select(Company, Rep, Dem, Total) %>%
+  pivot_longer(cols = c("Rep", "Dem"), # The columns to stack
+               names_to = "Party",    # New column for the party name
+               values_to = "Amount")  # New column for the value
+
+# 5. Create the plot
+ggplot(plot_data, 
+       # Set up the aesthetics
+       aes(x = Amount / 10^5,                             # Scale x-axis
+           y = reorder(Company, Total),                 # Y-axis, reordered by Total
+           fill = factor(Party, levels=c("Dem", "Rep")))) + # Color, controlling stack order
+  
+  geom_col() + # Use geom_col() for a stacked bar chart
+  
+  # Set custom colors and labels
+  scale_fill_manual(values = c("Dem" = "blue", "Rep" = "red"), # Custom colors
+                    name = "Party") +                       # Legend title
+  
+  labs(title = "Political Contributions by Employer",
+       x = "Dollars - 100,000's",
+       y = "") + # Remove y-axis label
+  
+  # Use a clean theme
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),  # Remove horizontal gridlines
+    panel.grid.minor.x = element_blank(),  # Remove minor x gridlines
+    axis.text.y = element_text(size = 8)   # Adjust y-axis text size
+  )
+```
+

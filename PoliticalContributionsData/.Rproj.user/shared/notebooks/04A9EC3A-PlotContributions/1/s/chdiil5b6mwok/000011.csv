@@ -1,0 +1,2 @@
+"0",""
+"0","axis(side=2, at=seq(1, n), labels=names, las=2, cex.axis=.65)"

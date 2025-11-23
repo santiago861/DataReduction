@@ -1,0 +1,5 @@
+"0",""
+"0","for (i in 1:n) {"
+"0","  lines(y=c(i,i), x=c(0, rep[i]), col=""red"", lwd=3)"
+"0","  lines(y=c(i,i), x=c(rep[i], rep[i]+dem[i]), col='blue', lwd=3)"
+"0","}"
